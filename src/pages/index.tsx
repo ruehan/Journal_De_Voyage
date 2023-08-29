@@ -1,75 +1,46 @@
 import { useLoadScript, GoogleMap, MarkerF } from '@react-google-maps/api';
 import type { NextPage } from 'next';
 import { useEffect, useMemo, useState } from 'react';
+import Upload from './layout/Upload';
+import useSWR from 'swr';
+import { Router, useRouter } from 'next/router';
 // import styles from '../styles/Home.module.css';
 
+interface LoginInfo {
+  loggedIn: boolean;
+  user?: any;
+}
+
+const fetcher = async (url: string): Promise<LoginInfo> => {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error('An error occurred while fetching the data.');
+  }
+  return res.json();
+};
 
 const Home: NextPage = () => {
-  const libraries = useMemo(() => ['places'], []);
-  const mapCenter = useMemo(
-    () => ({ lat: 27.672932021393862, lng: 85.31184012689732 }),
-    []
-  );
 
-  const mapOptions = useMemo<google.maps.MapOptions>(
-    () => ({
-      disableDefaultUI: true,
-      clickableIcons: true,
-      scrollwheel: false,
-    }),
-    []
-  );
+  const { data, error } = useSWR<LoginInfo>('/api/userdata', fetcher);
 
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string,
-    libraries: libraries as any,
-  });
+  const router = useRouter()
 
-  const [location, setLocation] = useState<{latitude: number, longitude: number} | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  if (!data) return <div>Loading...</div>;
 
-  
-  useEffect(() => {
-    if(navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords
-          setLocation({ latitude, longitude })
-        },
-        (error) => {
-          setError(error.message)
-        }
-      )
-    }
-  }, [])
+  // if(data.loggedIn === true){
+  //   router.push('/main')
+  // }
 
-
-  if (!isLoaded) {
-    return <p>Loading...</p>;
-  }
+  console.log(data.loggedIn)
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="bg-[url('https://storage.googleapis.com/journal-de-voyage/background_1.png')] bg-cover flex flex-col items-center justify-center w-full h-screen overflow-hidden">
+      <p className="mb-24 text-3xl text-white">Journal de Voyage</p>
       <div>
-        <p>lat : {location?.latitude}</p>
-        <p>lng : {location?.longitude}</p>
-        <h1 className="text-2xl font-bold mt-12 mb-12">You are maybe here...</h1>
+        <div className="bg-gray-200 m-4 w-48 h-12 text-xl flex items-center justify-center rounded-xl" onClick={() => router.push('/signup')}>Register</div>
+        <div className="bg-gray-200 m-4 w-48 h-12 text-xl flex items-center justify-center rounded-xl" onClick={() => router.push('/login')}>Login</div>
       </div>
-      {location && (
-        <GoogleMap
-        options={mapOptions}
-        zoom={14}
-        center={{lat: location?.latitude, lng: location?.longitude}}
-        mapTypeId={google.maps.MapTypeId.ROADMAP}
-        mapContainerStyle={{ width: '400px', height: '400px' }}
-        onLoad={() => console.log('Map Component Loaded...')}
-      >
-        <MarkerF
-          position={{lat: location?.latitude, lng: location?.longitude}}
-          onLoad={() => console.log('Marker Loaded...')} 
-        />
-        </GoogleMap>
-      )}
+
     </div>
   );
 };
