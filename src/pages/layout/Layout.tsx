@@ -10,7 +10,7 @@ type LayoutProps = {
 function Layout({ children }: LayoutProps) {
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <main>{children}</main>
     </div>
   );
