@@ -2,6 +2,8 @@ import { useLoadScript, GoogleMap, MarkerF } from '@react-google-maps/api';
 import type { NextPage } from 'next';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
+
 // import styles from '../styles/Home.module.css';
 
 type FormData = {
@@ -12,6 +14,9 @@ type FormData = {
 
 export default function Signup() {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+
+    const router = useRouter()
+
 
     const onSubmit = async (data: FormData) => {
         const response = await fetch('/api/login', {
@@ -24,10 +29,12 @@ export default function Signup() {
 
         const result = await response.json()
         console.log(result)
+
+        router.push("/")
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full h-full items-center justify-center">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full h-screen items-center justify-center">
 
         <div className="flex flex-col text-xl mt-12">
             <label>Email</label>
@@ -39,7 +46,7 @@ export default function Signup() {
                 message: 'Invalid email address'
                 }
             })}
-            className="mt-4 border-2 border-gray-200" />
+            className="mt-4 border-2 border-gray-200 h-12" />
             {errors.email && <span>{errors.email.message}</span>}
         </div>
         <div className="flex flex-col text-xl mt-12">
@@ -47,7 +54,7 @@ export default function Signup() {
             <input
             type="password"
             {...register('password', { required: true })}
-            className="mt-4 border-2 border-gray-200" />
+            className="mt-4 border-2 border-gray-200 h-12" />
             {errors.password && <span>This field is required</span>}
         </div>
         <button type="submit" className="mt-4 border-2 border-gray-200 w-24 h-12 rounded-2xl">Login</button>
