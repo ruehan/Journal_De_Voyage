@@ -3,6 +3,7 @@ import type { NextPage } from 'next';
 import { useEffect, useMemo, useState } from 'react';
 import Upload from './layout/Upload';
 import useSWR from 'swr';
+import { HiSearch } from 'react-icons/hi';
 // import styles from '../styles/Home.module.css';
 
 interface LoginInfo {
@@ -66,18 +67,25 @@ const Home: NextPage = () => {
   console.log(data)
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div>
-        <h1 className="text-2xl font-bold mt-12 mb-8">You are maybe here...</h1>
+    <div className="flex flex-col items-center justify-center relative w-full">
+      <div className="flex fixed top-0 left-0 z-10 w-full h-16 items-center justify-center">
+        <div className="w-4/6 border-2 rounded-xl border-gray-200 bg-white h-12 relative flex items-center justify-between text-gray-400 p-4">
+          <p>앨범을 생성해주세요.</p>
+          <HiSearch className="text-xl "/>
+        </div>
+        
       </div>
-      <Upload />
+      {/* <div>
+        <h1 className="text-2xl font-bold mt-12 mb-8">You are maybe here...</h1>
+      </div> */}
+      {/* <Upload /> */}
       {location && (
         <GoogleMap
         options={mapOptions}
         zoom={14}
         center={{lat: location?.latitude, lng: location?.longitude}}
         mapTypeId={google.maps.MapTypeId.ROADMAP}
-        mapContainerStyle={{ width: '50vh', height: '60vh' }}
+        mapContainerStyle={{ width: '100%', height: '90vh' }}
         onLoad={() => console.log('Map Component Loaded...')}
       >
         <MarkerF
