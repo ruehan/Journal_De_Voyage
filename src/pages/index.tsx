@@ -27,9 +27,9 @@ const Home: NextPage = () => {
 
   if (!data) return <div>Loading...</div>;
 
-  // if(data.loggedIn === true){
-  //   router.push('/main')
-  // }
+  if(data.loggedIn === true){
+    router.push('/main')
+  }
 
   console.log(data.loggedIn)
 
