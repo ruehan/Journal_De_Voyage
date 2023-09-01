@@ -1,7 +1,7 @@
 import { useLoadScript, GoogleMap, MarkerF } from '@react-google-maps/api';
 import type { NextPage } from 'next';
 import { useEffect, useMemo, useState } from 'react';
-import Upload from './layout/Upload';
+import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import { HiSearch } from 'react-icons/hi';
 // import styles from '../styles/Home.module.css';
@@ -25,6 +25,8 @@ const Home: NextPage = () => {
 
   const libraries = useMemo(() => ['places'], []);
 
+  const router = useRouter()
+
   const mapOptions = useMemo<google.maps.MapOptions>(
     () => ({
       disableDefaultUI: true,
@@ -44,6 +46,7 @@ const Home: NextPage = () => {
 
   
   useEffect(() => {
+
     if(navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -57,6 +60,9 @@ const Home: NextPage = () => {
     }
   }, [])
 
+  const clickCreate = () => {
+    router.push("/create-trip")
+  }
 
   if (!isLoaded) {
     return <p>Loading...</p>;
@@ -69,16 +75,11 @@ const Home: NextPage = () => {
   return (
     <div className="flex flex-col items-center justify-center relative w-full">
       <div className="flex fixed top-0 left-0 z-10 w-full h-16 items-center justify-center">
-        <div className="w-4/6 border-2 rounded-xl border-gray-200 bg-white h-12 relative flex items-center justify-between text-gray-400 p-4">
+        <div className="w-4/6 border-2 rounded-xl border-gray-200 bg-white h-12 relative flex items-center justify-between text-gray-400 p-4" onClick={clickCreate}>
           <p>앨범을 생성해주세요.</p>
           <HiSearch className="text-xl "/>
         </div>
-        
       </div>
-      {/* <div>
-        <h1 className="text-2xl font-bold mt-12 mb-8">You are maybe here...</h1>
-      </div> */}
-      {/* <Upload /> */}
       {location && (
         <GoogleMap
         options={mapOptions}
