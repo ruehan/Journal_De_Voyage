@@ -44,7 +44,7 @@ const Home: NextPage = () => {
   const [location, setLocation] = useState<{latitude: number, longitude: number} | null>(null)
   const [errormsg, setError] = useState<string | null>(null)
 
-  
+
   useEffect(() => {
 
     if(navigator.geolocation) {
@@ -57,10 +57,25 @@ const Home: NextPage = () => {
           setError(error.message)
         }
       )
+
+      
     }
   }, [])
 
-  const clickCreate = () => {
+  const clickCreate = async () => {
+
+    console.log(location)
+
+    const response = await fetch('/api/coords', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({latitude: location?.latitude, longitude: location?.longitude})
+    })
+
+    
+
     router.push("/create-trip")
   }
 
