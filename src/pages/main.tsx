@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import { HiSearch } from 'react-icons/hi';
+import { FaSatellite } from 'react-icons/fa'
 // import styles from '../styles/Home.module.css';
 
 interface LoginInfo {
@@ -24,6 +25,9 @@ const Home: NextPage = () => {
   const { data, error } = useSWR<LoginInfo>('/api/userdata', fetcher);
 
   const libraries = useMemo(() => ['places'], []);
+
+  const [hybrid, setHybrid] = useState<boolean>(false)
+  const [fixed, setFixed] = useState<boolean>(false)
 
   const router = useRouter()
 
@@ -79,6 +83,11 @@ const Home: NextPage = () => {
     router.push("/create-trip")
   }
 
+  const clickHybrid = () => {
+    setHybrid(!hybrid)
+    setFixed(true)
+  }
+
   if (!isLoaded) {
     return <p>Loading...</p>;
   }
@@ -99,8 +108,8 @@ const Home: NextPage = () => {
         <GoogleMap
         options={mapOptions}
         zoom={14}
-        center={{lat: location?.latitude, lng: location?.longitude}}
-        mapTypeId={google.maps.MapTypeId.ROADMAP}
+        center={fixed ? null : {lat: location?.latitude, lng: location?.longitude}}
+        mapTypeId={hybrid ? google.maps.MapTypeId.HYBRID : google.maps.MapTypeId.ROADMAP}
         mapContainerStyle={{ width: '100%', height: '90vh' }}
         onLoad={() => console.log('Map Component Loaded...')}
       >
@@ -111,6 +120,10 @@ const Home: NextPage = () => {
         </GoogleMap>
       )}
       
+      <div className="absolute top-1/4 h-36 flex flex-col justify-around right-4">
+        <button className="bg-white w-12 h-12 rounded-2xl border-2 border-gray-100 flex justify-center items-center text-xl" onClick={clickHybrid}><FaSatellite className={`${hybrid ? 'text-orange-200' : 'text-black'}`}/></button>
+        <button className="bg-white w-12 h-12 rounded-2xl border-2 border-gray-100">2</button>
+      </div>
     </div>
   );
 };
