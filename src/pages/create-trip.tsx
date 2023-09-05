@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 type FormData = {
   title: string;
   content: string;
-  image: FileList;
+  images: FileList;
 };
 
 const ImageUploadForm: React.FC = () => {
@@ -14,7 +14,10 @@ const ImageUploadForm: React.FC = () => {
     const formData = new FormData();
     formData.append('title', data.title);
     formData.append('content', data.content);
-    formData.append('image', data.image[0]);
+
+    Array.from(data.images).forEach((file) => {
+      formData.append('images', file);
+    })
 
     console.log(formData)
 
@@ -44,7 +47,7 @@ const ImageUploadForm: React.FC = () => {
     <form onSubmit={handleSubmit(onSubmit)} className="w-full rounded-xl bg-white relative flex flex-col items-center justify-center text-gray-400 p-4">
       <input {...register('title')} placeholder="Title" className="w-4/6 border-2 rounded-xl border-gray-200 h-12 m-4"/>
       <input {...register('content')} placeholder="Content" className="w-4/6 border-2 rounded-xl border-gray-200 h-12 m-4"/>
-      <input {...register('image')} type="file" className="w-4/6 border-2 rounded-xl border-gray-200 m-4"/>
+      <input {...register('images')} type="file" multiple className="w-4/6 border-2 rounded-xl border-gray-200 m-4"/>
       <button type="submit" className="w-4/6 border-2 rounded-xl border-gray-200 h-12 m-4">Upload</button>
     </form>
 );
