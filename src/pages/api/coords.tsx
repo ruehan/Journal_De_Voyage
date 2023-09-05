@@ -10,7 +10,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     // 로그인 처리
     const {
-        body: { latitude, longitude }
+        body: { latitude, longitude, email }
     } = req;
 
     console.log(latitude, longitude)
@@ -19,6 +19,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     req.session.set('coords', {
       latitude: latitude,
       longitude: longitude,
+      email: email
     });
     
     await req.session.save();
