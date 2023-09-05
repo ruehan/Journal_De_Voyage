@@ -71,7 +71,7 @@ const Home: NextPage = () => {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({latitude: location?.latitude, longitude: location?.longitude})
+      body: JSON.stringify({latitude: location?.latitude, longitude: location?.longitude, email: data?.user?.email})
     })
 
     
