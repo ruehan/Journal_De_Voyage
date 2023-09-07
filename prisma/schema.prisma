@@ -27,6 +27,15 @@ model Pin {
   longitude Float
   image     String?
   video     String?
+  mediaUrls String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Album {
+  id        Int      @id @default(autoincrement())
+  email     String
+  album     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
