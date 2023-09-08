@@ -6,6 +6,7 @@ import useSWR from 'swr';
 import { HiSearch } from 'react-icons/hi';
 import { FaSatellite } from 'react-icons/fa'
 import { MdGpsFixed } from 'react-icons/md'
+import {BiPhotoAlbum} from 'react-icons/bi'
 // import styles from '../styles/Home.module.css';
 
 interface LoginInfo {
@@ -125,9 +126,10 @@ const Home: NextPage = () => {
         </GoogleMap>
       )}
       
-      <div className="absolute top-1/4 h-36 flex flex-col justify-around right-4">
-        <button className="bg-white w-12 h-12 rounded-2xl border-2 border-gray-200 flex justify-center items-center text-xl" onClick={clickHybrid}><FaSatellite className={`${hybrid ? 'text-orange-200' : 'text-black'}`}/></button>
+      <div className="absolute top-1/4 h-48 flex flex-col justify-around right-4">
+        <button className="bg-white w-12 h-12 rounded-2xl border-2 border-gray-200 flex justify-center items-center text-xl" onClick={clickHybrid}><FaSatellite className={`${hybrid ? 'text-orange-300' : 'text-black'}`}/></button>
         <button className="bg-white w-12 h-12 rounded-2xl border-2 border-gray-200 flex justify-center items-center text-xl" onClick={clickGps}><MdGpsFixed /></button>
+        <button className="bg-white w-12 h-12 rounded-2xl border-2 border-gray-200 flex justify-center items-center text-3xl text-orange-300" onClick={clickGps}><BiPhotoAlbum /></button>
       </div>
     </div>
   );
