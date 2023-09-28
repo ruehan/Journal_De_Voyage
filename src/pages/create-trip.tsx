@@ -132,15 +132,18 @@ const ImageUploadForm: React.FC = () => {
           <div className="bg-gray-400 h-1/2 w-16 rounded-full text-md ml-4 flex items-center justify-center text-white" onClick={clickAddAlbum}>추가</div>
         </div>
       )}
+      <div className="grid grid-cols-2 justify-center items-center ">
       {selectedImages.map((url, index) => (
           <img 
             key={index}
             src={url} 
             alt={`Selected ${index}`} 
-            width="100" 
-            height="100" 
+            width="150" 
+            height="150" 
+            className="object-cover rounded-xl m-4"
           />
         ))}
+      </div>
     </form>
 );
 };
