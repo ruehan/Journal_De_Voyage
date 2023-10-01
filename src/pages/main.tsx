@@ -14,7 +14,20 @@ interface LoginInfo {
   user?: any;
 }
 
-const fetcher = async (url: string): Promise<LoginInfo> => {
+interface AlbumInfo {
+  albums: any;
+}
+
+
+const fetcher = async (url: string): Promise<AlbumInfo> => {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error('An error occurred while fetching the data.');
+  }
+  return res.json();
+};
+
+const user_fetcher = async (url: string): Promise<LoginInfo> => {
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error('An error occurred while fetching the data.');
@@ -24,7 +37,8 @@ const fetcher = async (url: string): Promise<LoginInfo> => {
 
 const Home: NextPage = () => {
 
-  const { data, error } = useSWR<LoginInfo>('/api/userdata', fetcher);
+  const { data, error } = useSWR<LoginInfo>('/api/userdata', user_fetcher);
+  const { data: albumData, error: albumError } = useSWR<AlbumInfo>('/api/get-pin', fetcher);
 
   const libraries = useMemo(() => ['places'], []);
 
@@ -62,9 +76,8 @@ const Home: NextPage = () => {
         (error) => {
           setError(error.message)
         }
-      )
+      )   
 
-      
     }
   }, [])
 
@@ -80,8 +93,6 @@ const Home: NextPage = () => {
       body: JSON.stringify({latitude: location?.latitude, longitude: location?.longitude, email: data?.user?.email})
     })
 
-    
-
     router.push("/create-trip")
   }
 
@@ -94,11 +105,19 @@ const Home: NextPage = () => {
     setFixed(false)
   }
 
+  const clickAlbum = () => {
+    router.push("/album")
+  }
+
   if (!isLoaded) {
     return <p>Loading...</p>;
   }
 
-  if (!data) return <div>Loading...</div>;
+  // if (data) {
+  //   data.loggedIn === false ? setLocation({ latitude : 51.50735909, longitude : -0.1277583}) : null
+  // }
+
+  if(!albumData) return <div>Loading...</div>
 
   console.log(data)
 
@@ -121,15 +140,23 @@ const Home: NextPage = () => {
       >
         <MarkerF
           position={{lat: location?.latitude, lng: location?.longitude}}
-          onLoad={() => console.log('Marker Loaded...')} 
+          onLoad={() => console.log('Marker Loaded...')}                                                
         />
+        {albumData.albums.map((album: any) => (
+          <MarkerF
+            key={album.id}
+            position={{lat: album.latitude, lng: album.longitude}}
+            onClick={() => router.push(`/album/${album.id}`)}
+            label={{text: album.title, color: "black", fontSize: "16px", fontWeight: "bold"}}
+          />
+        ))}
         </GoogleMap>
       )}
       
       <div className="absolute top-1/4 h-48 flex flex-col justify-around right-4">
         <button className="bg-white w-12 h-12 rounded-2xl border-2 border-gray-200 flex justify-center items-center text-xl" onClick={clickHybrid}><FaSatellite className={`${hybrid ? 'text-orange-300' : 'text-black'}`}/></button>
         <button className="bg-white w-12 h-12 rounded-2xl border-2 border-gray-200 flex justify-center items-center text-xl" onClick={clickGps}><MdGpsFixed /></button>
-        <button className="bg-white w-12 h-12 rounded-2xl border-2 border-gray-200 flex justify-center items-center text-3xl text-orange-300" onClick={clickGps}><BiPhotoAlbum /></button>
+        <button className="bg-white w-12 h-12 rounded-2xl border-2 border-gray-200 flex justify-center items-center text-3xl text-orange-300" onClick={clickAlbum}><BiPhotoAlbum /></button>
       </div>
     </div>
   );
