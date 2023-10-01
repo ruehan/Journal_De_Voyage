@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 
 const upload = multer({
   storage: multer.diskStorage({
-    destination: './uploads',
+    destination: './public',
     filename: (req, file, cb) => {
       cb(null, file.originalname)
     },
@@ -35,7 +35,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(400).json({error: err.message})
       }
 
-      const { title, content } = req.body;
+      console.log(req.files)
+
+      const { title, content, album } = req.body;
       const imagePaths = (req.files as Express.Multer.File[]).map((file) => file.path)
 
       const coords = req.session.get("coords");
@@ -43,18 +45,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const latitude = coords.latitude;
       const longitude = coords.longitude;
 
+      console.log(imagePaths)
+
         const pin = await prisma.pin.create({
           data: {
             title,
             content,
             image : imagePaths.join(","),
+            album,
             email,
             latitude,
             longitude,
           },
         });
 
-        res.status(200).json({ message: 'Upload Success.' })
+        res.status(200).json({ message: pin })
     })
   } else{
     res.status(405).send('Method Not Allowed');
