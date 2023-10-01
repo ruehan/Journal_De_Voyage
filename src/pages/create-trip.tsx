@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import useSWR from 'swr';
@@ -42,12 +43,15 @@ const ImageUploadForm: React.FC = () => {
   const { data, error } = useSWR<LoginInfo>('/api/userdata', fetcher);
   const { data : albums, error : albumsError } = useSWR<AlbumInfo>('/api/get-album', fetcher_album);
 
+  const router = useRouter();
+
   const [selectedImages, setSelectedImages] = useState([]);
 
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
     formData.append('title', data.title);
     formData.append('content', data.content);
+    formData.append('album', data.album);
 
     Array.from(data.images).forEach((file) => {
       formData.append('images', file);
@@ -61,6 +65,7 @@ const ImageUploadForm: React.FC = () => {
     const result = await response.json();
     if(response.ok){
       alert('Upload Success');
+      router.push('/main')
     }else{
       alert('Upload Fail');
     }
@@ -96,10 +101,25 @@ const ImageUploadForm: React.FC = () => {
     setAlbumText(e.target.value)
   }
 
+  // const handleImageChange = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   const urls = files.map((file) => URL.createObjectURL(file));
+  //   setSelectedImages(urls);
+  // };
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    const urls = files.map((file) => URL.createObjectURL(file));
-    setSelectedImages(urls);
+    const fileReaders = files.map((file) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+      });
+    });
+  
+    Promise.all(fileReaders).then((urls) => {
+      setSelectedImages(urls);
+    });
   };
 
   if(!albums){
@@ -109,6 +129,7 @@ const ImageUploadForm: React.FC = () => {
   console.log(albums.albums)
 
   return (
+    <>
     <form onSubmit={handleSubmit(onSubmit)} className="w-full rounded-xl bg-white relative flex flex-col items-center justify-center text-gray-400 p-4">
       <div className="flex w-4/6 items-center justify-center">
         <select {...register('album')}
@@ -124,7 +145,7 @@ const ImageUploadForm: React.FC = () => {
       </div>
       <input {...register('title')} placeholder="Title" className="w-4/6 border-2 rounded-xl border-gray-200 h-12 m-4"/>
       <input {...register('content')} type="" placeholder="Content" className="w-4/6 border-2 rounded-xl border-gray-200 h-12 m-4"/>
-      <input {...register('images')} type="file" multiple className="w-4/6 border-2 rounded-xl border-gray-200 m-4" onChange={handleImageChange} />
+      <input {...register('images')} type="file" multiple className="w-4/6 border-2 rounded-xl border-gray-200 m-4" />
       <button type="submit" className="w-4/6 border-2 rounded-xl border-gray-200 h-12 m-4">Upload</button>
       {createAlbum && (
         <div className="w-5/6 h-1/6 absolute top-1/6 rounded-3xl backdrop-opacity-95 bg-white/90 border-2 border-gray-200 flex items-center justify-center">
@@ -132,19 +153,21 @@ const ImageUploadForm: React.FC = () => {
           <div className="bg-gray-400 h-1/2 w-16 rounded-full text-md ml-4 flex items-center justify-center text-white" onClick={clickAddAlbum}>추가</div>
         </div>
       )}
-      <div className="grid grid-cols-2 justify-center items-center ">
+      
+    </form>
+    <div className="flex flex-wrap w-screen">
       {selectedImages.map((url, index) => (
           <img 
+            className="object-cover w-1/4 h-1/4 border-2 border-gray-200 rounded-xl"
             key={index}
             src={url} 
             alt={`Selected ${index}`} 
-            width="150" 
-            height="150" 
-            className="object-cover rounded-xl m-4"
+            width="100" 
+            height="100" 
           />
         ))}
-      </div>
-    </form>
+    </div>
+    </>
 );
 };
 
